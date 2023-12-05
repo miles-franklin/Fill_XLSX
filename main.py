@@ -52,9 +52,6 @@ def setup_xmls():
         tree = ET.ElementTree(root)
         ET.indent(tree)
 
-        # Write the XML content to a file
-        tree.write("output.xml", encoding="utf-8", xml_declaration=True)
-
         # Write the tree to an XML file
         print(f"Creating {os.path.join(inputs_dir, xml_file_name)}")
         if os.path.exists(os.path.join(inputs_dir, xml_file_name)):
@@ -78,7 +75,6 @@ def get_data_from_xml(source="inputs/a.xml", namespace=""):
 # MAIN
 #===============================================================================
 def main():
-    print(sys.argv[1:])
     args = get_args(sys.argv[1:])  
 
     if args.setup:
@@ -92,9 +88,9 @@ def main():
 
     cell_a1 = worksheet["A1"].value
     rows_offset = 5
-    i = 0
+    index = 0
     while True:
-        base_location = worksheet["A1"].offset(row=i*rows_offset, column=0).coordinate
+        base_location = worksheet["A1"].offset(row=index*rows_offset, column=0).coordinate
         if worksheet[base_location].value != "Source":
             break
 
@@ -111,10 +107,13 @@ def main():
             worksheet[input_loc] = data[worksheet[var_loc].value]
         
         # Increment
-        i += 1
+        index += 1
 
     # Save the workbook
-    workbook.save('output.xlsx')
+    output_file = os.path.dirname(os.path.abspath(__file__))
+    output_file = os.path.join(output_file, "output.xlsx")
+    workbook.save(output_file)
+    print(f'Ouput saved to "{output_file}"')
 
 if __name__ == "__main__":
     main()
